@@ -1,0 +1,9 @@
+.cache`
+.config
+.local
+.ssh
+.vscode
+.vscode-server
+public_html
+.bash_history
+.wget-hsts
