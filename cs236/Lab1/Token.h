@@ -6,8 +6,8 @@
 using namespace std;
 
 enum TokenType {
-    COMMA, PERIOD, Q_MARK, LEFT_PAREN, RIGHT_PAREN, COLON, COLON_DASH, MULTIPLY,
-    ADD, SCHEMES, FACTS, RULES, QUERIES, ID, STRING, COMMENT, UNDEFINED, EOF, NULL
+    COMMA, PERIOD, Q_MARK, LEFT_PAREN, RIGHT_PAREN, COLON, COLON_DASH, E_O_F, MULTIPLY,
+    ADD, SCHEMES, FACTS, RULES, QUERIES, ID, STRING, COMMENT, UNDEFINED
 };
 
 class Token {
@@ -18,10 +18,42 @@ class Token {
 
     string typeName(TokenType type) const {
         switch (type) {
-        case COMMA:
-            return "COMMA";
-        case STRING:
-            return "STRING";
+            case COMMA:
+                return "COMMA";
+            case PERIOD:
+                return "PERIOD";
+            case Q_MARK: 
+                return "Q_MARK";
+            case LEFT_PAREN: 
+                return "LEFT_PAREN";
+            case RIGHT_PAREN: 
+                return "RIGHT_PAREN";
+            case COLON: 
+                return "COLON";
+            case COLON_DASH: 
+                return "COLON_DASH";
+            case E_O_F:
+                return "EOF";
+            case MULTIPLY:
+                return "MULTIPLY";
+            case ADD:
+                return "ADD";
+            case SCHEMES:
+                return "SCHEMES";
+            case FACTS:
+                return "FACTS";
+            case RULES:
+                return "RULES";
+            case QUERIES: 
+                return "QUERIES";
+            case ID:
+                return "ID";
+            case STRING:
+                return "STRING";
+            case COMMENT: 
+                return "COMMENT";
+            case UNDEFINED:
+                return "UNDEFINED";
         }
         return "NULL";
     }
@@ -31,13 +63,13 @@ class Token {
      : type(type), value(value), line(line) { }
 
     Token() {
-        type = NULL;
-        value = NULL;
+        type = UNDEFINED;
+        value = "";
         line = 0;
     }
 
     bool isEOF() {
-        if(type == EOF)
+        if(type == E_O_F)
             return true;
         return false;
     }

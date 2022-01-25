@@ -10,9 +10,9 @@ int main() {
 
     Token t;
 
-    Scanner s = Scanner(",,");
+    Scanner s = Scanner(",,,.&.? Schemes Facts Queries Rules x'teststringgg please'");
     do {
         Token t = s.scanToken();
         cout << t.toString() << endl;
-    } while(t)
+    } while(!t.isEOF());
 }
