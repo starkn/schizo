@@ -69,8 +69,9 @@ class Token {
     }
 
     bool isEOF() {
-        if(type == E_O_F)
+        if(type == E_O_F) {
             return true;
+        }
         return false;
     }
 
