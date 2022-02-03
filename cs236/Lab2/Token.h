@@ -75,6 +75,10 @@ class Token {
         return false;
     }
 
+    TokenType getType() const {
+        return this->type;
+    }
+
     string toString() {
         stringstream out;
         out << "(" << typeName(type) << "," << "\"" << value << "\"" << "," << line << ")";
