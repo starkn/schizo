@@ -84,4 +84,8 @@ class Token {
         out << "(" << typeName(type) << "," << "\"" << value << "\"" << "," << line << ")";
         return out.str();
     }
+
+    string getValue() const {
+        return this->value;
+    }
 };
