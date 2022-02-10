@@ -24,11 +24,16 @@ private:
         cout << "error" << endl;
     }
 
-    void match(TokenType t)
+    string match(TokenType t, bool ret = false)
     {
+        string val;
         if (tokenType() == t)
         {
+            if(ret)
+                val = tokens.at(0).getValue();
+
             advanceToken();
+            return val;
         }
         else
         {
