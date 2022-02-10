@@ -14,19 +14,33 @@ private:
     vector<Parameter> paramList;
     string ID;
 public:
-    Predicate(string id);
+    Predicate();
     ~Predicate();
+
+    Predicate(string id);
+
+    void addParameter(Parameter p);
 
     string toString();
 };
+
+Predicate::Predicate()
+{
+    ID = "Undefined";
+}
+
+Predicate::~Predicate()
+{
+}
 
 Predicate::Predicate(string id)
 {
     this->ID = id;
 }
 
-Predicate::~Predicate()
+void Predicate::addParameter(Parameter p)
 {
+    paramList.push_back(p);
 }
 
 string Predicate::toString()
@@ -35,7 +49,7 @@ string Predicate::toString()
     pred << ID;
     for(Parameter param : paramList)
     {
-        pred << ", " << param;
+        pred << ", " << param.toString();
     }
     return pred.str();
 }
