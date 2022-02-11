@@ -42,4 +42,6 @@ string Rule::toString()
     {
         rule << ", " << pred.toString();
     }
+
+    return rule.str();
 }

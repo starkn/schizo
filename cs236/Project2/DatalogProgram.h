@@ -61,14 +61,14 @@ void DatalogProgram::addQuery(Predicate query)
 string DatalogProgram::toString()
 {
     stringstream out;
-    out << "Success!!\n"
+    out << "Success!!\n";
     out << "Schemes (" << schemes.size() << "):\n";
     for(Predicate scheme : schemes)
     {
         out << scheme.toString();
     }
     out << "Facts (" << facts.size() << "):\n";
-    for (Predicate fact : fact)
+    for (Predicate fact : facts)
     {
         out << fact.toString();
     }

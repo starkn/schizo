@@ -1,5 +1,10 @@
 #include <vector>
 #include <iostream>
+
+#include "DatalogProgram.h"
+#include "Predicate.h"
+#include "Rule.h"
+#include "Parameter.h"
 #include "Token.h"
 
 using namespace std;
@@ -8,6 +13,8 @@ class Parser
 {
 private:
     vector<Token> tokens;
+
+    DatalogProgram data;
 
     TokenType tokenType() const
     {
@@ -43,11 +50,22 @@ private:
         }
     }
 
+    Predicate scheme()
+    {
+        Predicate s = Predicate(match(ID, true));
+        match(LEFT_PAREN);
+        Parameter p = Parameter(match(ID, true));
+        s.addParameter(p);
+        idList(s);
+        match(RIGHT_PAREN);
+        return s;
+    }
+
     void schemes()
     {
         match(SCHEMES);
         match(COLON);
-        scheme();
+        this->data.addScheme(scheme());
         schemeList();
     }
 
@@ -55,7 +73,7 @@ private:
     {
         if (tokenType() == ID)
         {
-            scheme();
+            this->data.addScheme(scheme());
             schemeList();
         }
         else
@@ -64,22 +82,14 @@ private:
         }
     }
 
-    void scheme()
-    {
-        match(ID);
-        match(LEFT_PAREN);
-        match(ID);
-        idList();
-        match(RIGHT_PAREN);
-    }
-
-    void idList()
+    void idList(Predicate &s)
     {
         if (tokenType() == COMMA)
         {
             match(COMMA);
-            match(ID);
-            idList();
+            Parameter p = Parameter(match(ID, true));
+            s.addParameter(p);
+            idList(s);
         }
         else
         {
@@ -162,10 +172,10 @@ private:
 
     void headPredicate()
     {
-        match(ID);
+        Predicate p = Predicate(match(ID, true));
         match(LEFT_PAREN);
         match(ID);
-        idList();
+        idList(p);
         match(RIGHT_PAREN);
     }
 
@@ -267,5 +277,7 @@ public:
         {
             cerr << msg << endl;
         }
+
+        cout << data.toString();
     }
 };
