@@ -46,10 +46,13 @@ void Predicate::addParameter(Parameter p)
 string Predicate::toString()
 {
     stringstream pred;
-    pred << ID;
-    for(Parameter param : paramList)
+    pred << ID << "(";
+    for(unsigned int i=0; i<paramList.size(); i++)
     {
-        pred << ", " << param.toString();
+        pred << paramList[i].toString();
+        if(i != paramList.size() - 1)
+            pred << ",";
     }
+    pred << ")";
     return pred.str();
 }

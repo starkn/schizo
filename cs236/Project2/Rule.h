@@ -38,9 +38,11 @@ string Rule::toString()
 {
     stringstream rule;
     rule << head.toString() << " :- ";
-    for (Predicate pred : predList)
+    for (unsigned int i=0; i<predList.size(); i++)
     {
-        rule << ", " << pred.toString();
+        rule << predList[i].toString();
+        if(i != predList.size() -1)
+            rule << ",";
     }
 
     return rule.str();

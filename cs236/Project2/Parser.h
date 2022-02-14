@@ -1,5 +1,7 @@
 #include <vector>
 #include <iostream>
+#include <string>
+#include <exception>
 
 #include "DatalogProgram.h"
 #include "Predicate.h"
@@ -8,6 +10,7 @@
 #include "Token.h"
 
 using namespace std;
+
 
 class Parser
 {
@@ -33,20 +36,29 @@ private:
 
     string match(TokenType t, bool ret = false)
     {
-        string val;
-        if (tokenType() == t)
+        
+        if(tokenType() == COMMENT)
         {
-            if(ret)
-                val = tokens.at(0).getValue();
-
             advanceToken();
-            return val;
+            return match(t, ret); 
         }
         else
         {
-            string msg = "Failure!\n ";
-            msg = msg + tokens.at(0).toString();
-            throw msg;
+            string val;
+            if (tokenType() == t)
+            {
+                if(ret)
+                    val = tokens.at(0).getValue();
+
+                advanceToken();
+                return val;
+            }
+            else
+            {
+                //string msg = "Failure!\n ";
+                //msg = msg + tokens.at(0).toString();
+                throw exception();
+            }
         }
     }
 
@@ -61,10 +73,24 @@ private:
         return s;
     }
 
+    Predicate fact()
+    {
+        Predicate f = Predicate(match(ID, true));
+        match(LEFT_PAREN);
+        string val = match(STRING, true);
+        this->data.addDomain(val);
+        Parameter p = Parameter(val);
+        f.addParameter(p);
+        stringList(f);
+        match(RIGHT_PAREN);
+        match(PERIOD);
+        return f;
+    }
+
     void schemes()
     {
         match(SCHEMES);
-        match(COLON);
+        match(COLON, true);
         this->data.addScheme(scheme());
         schemeList();
     }
@@ -82,14 +108,14 @@ private:
         }
     }
 
-    void idList(Predicate &s)
+    void idList(Predicate &pd)
     {
         if (tokenType() == COMMA)
         {
             match(COMMA);
             Parameter p = Parameter(match(ID, true));
-            s.addParameter(p);
-            idList(s);
+            pd.addParameter(p);
+            idList(pd);
         }
         else
         {
@@ -101,6 +127,7 @@ private:
     {
         match(FACTS);
         match(COLON);
+        //this->data.addFact(fact());
         factList();
     }
 
@@ -108,7 +135,7 @@ private:
     {
         if (tokenType() == ID)
         {
-            fact();
+            this->data.addFact(fact());
             factList();
         }
         else
@@ -117,23 +144,16 @@ private:
         }
     }
 
-    void fact()
-    {
-        match(ID);
-        match(LEFT_PAREN);
-        match(STRING);
-        stringList();
-        match(RIGHT_PAREN);
-        match(PERIOD);
-    }
-
-    void stringList()
+    void stringList(Predicate &pd)
     {
         if (tokenType() == COMMA)
         {
             match(COMMA);
-            match(STRING);
-            stringList();
+            string val = match(STRING, true);
+            Parameter p = Parameter(val);
+            this->data.addDomain(val);
+            pd.addParameter(p);
+            stringList(pd);
         }
         else
         {
@@ -145,6 +165,7 @@ private:
     {
         match(RULES);
         match(COLON);
+        //this->data.addRule(rule());
         ruleList();
     }
 
@@ -152,7 +173,7 @@ private:
     {
         if (tokenType() == ID)
         {
-            rule();
+            this->data.addRule(rule());
             ruleList();
         }
         else
@@ -161,40 +182,47 @@ private:
         }
     }
 
-    void rule()
+    Rule rule()
     {
-        headPredicate();
+        Predicate head = Predicate(headPredicate());
+        Rule r = Rule(head);
         match(COLON_DASH);
-        predicate();
-        predicateList();
+        Predicate p = Predicate(pred());
+        r.addPredicate(p);
+        predicateList(r);
         match(PERIOD);
+        return r;
     }
 
-    void headPredicate()
+    Predicate headPredicate()
     {
         Predicate p = Predicate(match(ID, true));
         match(LEFT_PAREN);
-        match(ID);
+        Parameter pm = Parameter(match(ID, true));
+        p.addParameter(pm);
         idList(p);
         match(RIGHT_PAREN);
+        return p;
     }
 
-    void predicate()
+    Predicate pred()
     {
-        match(ID);
+        Predicate pd = Predicate(match(ID, true));
         match(LEFT_PAREN);
-        parameter();
-        parameterList();
+        Parameter p = Parameter(parameter());
+        pd.addParameter(p);
+        parameterList(pd);
         match(RIGHT_PAREN);
+        return pd;
     }
 
-    void predicateList()
+    void predicateList(Rule &r)
     {
         if (tokenType() == COMMA)
         {
             match(COMMA);
-            predicate();
-            predicateList();
+            r.addPredicate(pred());
+            predicateList(r);
         }
         else
         {
@@ -202,25 +230,27 @@ private:
         }
     }
 
-    void parameter()
+    Parameter parameter()
     {
         if (tokenType() == STRING)
         {
-            match(STRING);
+            Parameter p = Parameter(match(STRING, true));
+            return p;
         }
         else
         {
-            match(ID);
+            Parameter p = Parameter(match(ID, true));
+            return p;
         }
     }
 
-    void parameterList()
+    void parameterList(Predicate &pd)
     {
         if (tokenType() == COMMA)
         {
             match(COMMA);
-            parameter();
-            parameterList();
+            pd.addParameter(parameter());
+            parameterList(pd);
         }
         else
         {
@@ -232,21 +262,22 @@ private:
     {
         match(QUERIES);
         match(COLON);
-        query();
+        this->data.addQuery(query());
         queryList();
     }
 
-    void query()
+    Predicate query()
     {
-        predicate();
+        Predicate p = Predicate(pred());
         match(Q_MARK);
+        return p;
     }
 
     void queryList()
     {
         if (tokenType() == ID)
         {
-            query();
+            this->data.addQuery(query());
             queryList();
         }
         else
@@ -272,12 +303,14 @@ public:
             this->rules();
             this->queries();
             this->iseof();
+            cout << data.toString();
         }
-        catch (string msg)
+        catch (...)
         {
-            cerr << msg << endl;
+            string msg = "Failure!\n  ";
+            msg = msg + tokens.at(0).toString();
+            cout << msg << endl;
         }
 
-        cout << data.toString();
     }
 };
