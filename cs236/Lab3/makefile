@@ -1,7 +1,7 @@
 
 # makefile for project 2 pass-off tests
 
-NUM:=2
+NUM:=3
 
 buckets:=20 40 60 80 100
 
@@ -28,5 +28,6 @@ $(buckets):
 	done \
 
 compile:
-	g++ -Wall -Werror -std=c++17 -g *.cpp -o lab$(NUM)
+	g++ -Wall -Werror -std=c++17 -g main.cpp -o proj$(NUM)
+	g++ -Wall -Werror -std=c++17 -g test.cpp -o test
 
