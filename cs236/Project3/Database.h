@@ -3,6 +3,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <map>
 
 #include "Scheme.h"
 #include "Tuple.h"
@@ -81,23 +82,28 @@ void Database::fillRelations(vector<Predicate> f)
 
 string Database::doQuery(Predicate q)
 {
+    map<int, string> var;
+    map<int, string> con;
     stringstream ss;
     ss << q.toString() << endl;
 
-    for(auto param : q.paramList)
+    for (unsigned int i = 0; i < q.paramList.size(); i++)
     {
-        if(param.toString().at(0) == '\'') {
-            //ss << param.toString() << endl;
+        if(q.paramList[i].toString().at(0) == '\'') {
+            con.insert(pair<int, string>(i, q.paramList[i].toString()));
+        }
+        else {
+            var.insert(pair<int, string>(i, q.paramList[i].toString()));
         }
     }
-    
+
     for (unsigned int i = 0; i < relations.size(); i++)
     {
         //cout << relations[i].toString() << endl;
 
         if (relations[i].getName() == q.ID)
         {
-            Relation rel = relations[i].select(0, "'b'");
+            Relation rel = relations[i].select(con.begin()->first, con.begin()->second);
             ss << rel.toString();
         }
     }
