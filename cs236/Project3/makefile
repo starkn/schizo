@@ -10,14 +10,13 @@ tests:=project$(NUM)-tests
 .SILENT: all run
 
 all: run
-	@rm $(tests)/out.txt
-
+	
 run:
 	for number in $(numbers) ; \
 	do \
 		echo "Running input $$number" ; \
-		./lab$(NUM) $(tests)/in$$number.txt > $(tests)/out.txt ; \
-		diff $(tests)/out$$number.txt $(tests)/out.txt || (echo "diff failed on test $$number \n") ; \
+		./proj$(NUM) $(tests)/in$$number.txt > $(tests)/myout$$number.txt ; \
+		diff $(tests)/out$$number.txt $(tests)/myout$$number.txt || (echo "diff failed on test $$number \n") ; \
 	done
 
 compile:

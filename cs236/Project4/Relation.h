@@ -1,8 +1,10 @@
 #pragma once
 
 #include <string>
+#include <iostream>
 #include <sstream>
 #include <set>
+#include <map>
 #include "Scheme.h"
 #include "Tuple.h"
 
@@ -37,9 +39,7 @@ public:
     {
         Relation result(name, scheme);
         if(con.size() < 1) {
-            result = *this;
-            result = result.project(var, result);
-            return result;
+            return *this;
         }
         else {
             for (auto &tuple : tuples) {
@@ -53,7 +53,6 @@ public:
                     result.addTuple(tuple);
             }
         }
-        result = result.project(var, result);
         return result;
     }
 
@@ -72,7 +71,8 @@ public:
         return tuples.size();
     }
 
-    Relation project(map<int, string> var, Relation rel) {
+    void project(map<int, string> var) 
+    {
         map<int, string>::iterator it;
         vector<int> pos;
         vector<string> names;
@@ -80,19 +80,47 @@ public:
             pos.push_back(it->first);
             names.push_back(it->second);
         }
+        scheme.rename(names);
+    }
 
-        Scheme s = Scheme(names);
-
-        Relation r = Relation(rel.getName(), s);
-
-        for (auto &tuple : tuples)
+    static bool joinable(const Scheme& leftScheme, const Scheme& rightScheme,
+	            const Tuple& leftTuple, const Tuple& rightTuple) 
+    {
+        bool join = false;
+        for (unsigned leftIndex = 0; leftIndex < leftScheme.size(); leftIndex++)
         {
-            vector<string> current;
-            for(int p : pos) {
-                current.push_back(tuple.at(p));
+            const string &leftName = leftScheme.at(leftIndex);
+            const string &leftValue = leftTuple.at(leftIndex);
+            cout << "left name: " << leftName << " value: " << leftValue << endl;
+            for (unsigned rightIndex = 0; rightIndex < rightScheme.size(); rightIndex++)
+            {
+                const string &rightName = rightScheme.at(rightIndex);
+                const string &rightValue = rightTuple.at(rightIndex);
+                cout << "right name: " << rightName << " value: " << rightValue << endl;
+                if(rightValue == leftValue && rightName == leftName) {
+                    join = true;
+                }
             }
-            r.addTuple(current);
         }
+
+        
+
+        return join;
+    }
+
+    Relation join(const Relation &r)
+    {
+        const Scheme &leftScheme = scheme;
+        for (const Tuple &leftTuple : tuples)
+        {
+            cout << "left tuple: " << leftScheme.toString(leftTuple) << endl;
+            const Scheme &rightScheme = r.scheme;
+            for (const Tuple &rightTuple : r.tuples)
+            {
+                cout << "right tuple: " << rightScheme.toString(rightTuple) << endl;
+            }
+        }
+        
         return r;
     }
 };

@@ -1,0 +1,18 @@
+Running input 30
+5,6c5,9
+< SK(X,X)? Yes(1)
+<   X='b'
+---
+>   
+> SK(X,X)? Yes(3)
+>   X='a', X='c'
+>   X='b', X='b'
+>   X='b', X='c'
+diff failed on test 30 
+
+Running input 33
+Running input 35
+Running input 36
+Running input 37
+Running input 61
+Running input 62

@@ -105,7 +105,7 @@ string Database::doQuery(Predicate q)
         if (relations[i].getName() == q.ID)
         {
             rel = relations[i].select(con, var);
-            //rel.project(var);
+            rel.project(var);
         }
     }
 
