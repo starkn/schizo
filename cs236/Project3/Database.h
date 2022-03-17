@@ -84,12 +84,16 @@ string Database::doQuery(Predicate q)
 {
     map<int, string> var;
     map<int, string> con;
+
     stringstream ss;
     ss << q.toString() << "? ";
+
+
+    // Just initiating rel to an arbitrary relation object
     Relation rel = relations[0];
 
-        for (unsigned int i = 0; i < q.paramList.size(); i++)
-    {
+    // Sort Query params into maps of constants and variables
+    for (unsigned int i = 0; i < q.paramList.size(); i++) {
         if(q.paramList[i].toString().at(0) == '\'') {
             con.insert(pair<int, string>(i, q.paramList[i].toString()));
         }
@@ -98,20 +102,23 @@ string Database::doQuery(Predicate q)
         }
     }
 
-    for (unsigned int i = 0; i < relations.size(); i++)
-    {
-        //cout << relations[i].toString() << endl;
-
-        if (relations[i].getName() == q.ID)
-        {
+    // Run query on every relation in the database
+    for (unsigned int i = 0; i < relations.size(); i++) {
+        if (relations[i].getName() == q.ID) {
             rel = relations[i].select(con, var);
-            //rel.project(var);
+            vector<int> toErase = rel.runVars(var);
+            rel = rel.project(var, rel, toErase);
         }
     }
-
+    // If there are no return relations output No
     if(rel.size() == 0) {
         ss << "No" << endl;
     }
+    // If there are no variables there is no need to print the relation
+    else if (var.size() == 0) {
+        ss << "Yes(" << rel.size() << ")" << endl;  
+    }
+    // Print the variable values in a relations format
     else {
         ss << "Yes(" << rel.size() << ")" << endl;
         ss << rel.toString();

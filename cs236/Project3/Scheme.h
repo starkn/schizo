@@ -46,10 +46,8 @@ public:
         names = n;
     }
 
-    // TODO: add more delegation functions as needed
-};
+    void erase(int i) {
+        names.erase(names.begin() + i);
+    }
 
-Scheme::Scheme(Predicate scheme)
-{
-    
-}
+};
