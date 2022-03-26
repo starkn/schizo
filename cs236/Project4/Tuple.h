@@ -9,7 +9,7 @@ class Tuple : public vector<string>
 {
 
 private:
-    vector<string> values;
+    mutable vector<string> values;
 
 public:
     Tuple(vector<string> values) : values(values) {}
@@ -24,10 +24,20 @@ public:
         return values.at(index);
     }
 
+    void erase(int i) const
+    {
+        values.erase(values.begin() + i);
+    }
+
+    void move(int from, int to) const {
+        string temp = values.at(to);
+        values.at(to) = values.at(from);
+        values.at(from) = temp;
+    }
+    
     bool operator<(const Tuple t) const
     {
         return values < t.values;
     }
 
-    // TODO: add more delegation functions as needed
 };

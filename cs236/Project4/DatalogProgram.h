@@ -4,6 +4,7 @@
 #include <iostream>
 //#include <sstream>
 #include <string>
+#include <variant>
 
 #include "Predicate.h"
 #include "Rule.h"
@@ -19,6 +20,7 @@ private:
     vector<Rule> rules;
     vector<Predicate> queries;
     vector<string> domains;
+    Database data;
 public:
     DatalogProgram(/* args */);
     ~DatalogProgram();
@@ -28,9 +30,11 @@ public:
     void addRule(Rule rule);
     void addQuery(Predicate query);
     void addDomain(string domain);
+    void createDatabase();
 
     string toString();
     string doQueries();
+    string evalRules();
 };
 
 DatalogProgram::DatalogProgram(/* args */)
@@ -92,6 +96,11 @@ void DatalogProgram::addQuery(Predicate query)
     queries.push_back(query);
 }
 
+void DatalogProgram::createDatabase()
+{
+    data = Database(schemes, facts);
+}
+
 
 string DatalogProgram::toString()
 {
@@ -130,10 +139,32 @@ string DatalogProgram::toString()
 string DatalogProgram::doQueries()
 {
     stringstream out;
-    Database database(schemes, facts, rules, queries);
-    
-    for(auto query : queries)
-        out << database.doQuery(query);
+    cout << "Query Evaluation" << endl;
+
+        for (auto query : queries)
+    {
+        data.doQuery(query);
+    }
+
+    return "";
+}
+
+string DatalogProgram::evalRules()
+{
+    cout << "Rule Evaluation" << endl;
+    stringstream out;
+    int before = 0;
+    int after = 1;
+    int count = 0;
+    while(before != after) {
+        before = data.size();
+        for(auto rule: rules)
+            out << data.evalRule(rule);
+        after = data.size();
+        count ++;
+    }
+
+    cout << "\nSchemes populated after " << count << " passes through the Rules.\n" << endl;
 
     return out.str();
 }

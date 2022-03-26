@@ -180,7 +180,7 @@ private:
         }
         else
         {
-            // lambda
+
         }
     }
 
@@ -193,6 +193,10 @@ private:
         r.addPredicate(p);
         predicateList(r);
         match(PERIOD);
+        if(tokenType() == COMMENT) 
+        {
+            advanceToken();
+        }
         return r;
     }
 
@@ -305,6 +309,8 @@ public:
             this->rules();
             this->queries();
             this->iseof();
+            data.createDatabase();
+            cout << data.evalRules();
             cout << data.doQueries();
         }
         catch (...)

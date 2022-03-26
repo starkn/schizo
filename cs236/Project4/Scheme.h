@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <algorithm>
 #include <string>
 #include <sstream>
 #include "Tuple.h"
@@ -12,7 +13,7 @@ class Scheme : public vector<string>
 {
 
 private:
-    vector<string> names;
+    mutable vector<string> names;
 
 public:
     Scheme(vector<string> names) : names(names) {}
@@ -46,10 +47,32 @@ public:
         names = n;
     }
 
-    // TODO: add more delegation functions as needed
-};
+    void erase(int i) {
+        names.erase(names.begin() + i);
+    }
 
-Scheme::Scheme(Predicate scheme)
-{
+    void move(int from, int to) {
+        string temp = names.at(to);
+        names.at(to) = names.at(from);
+        names.at(from) = temp;
+    }
     
-}
+    vector<string>::iterator end() {
+        return names.end();
+    }
+
+    vector<string>::iterator begin() {
+        return names.begin();
+    }
+
+    Scheme join(const Scheme &scheme) const {
+        vector<string> n = names;
+        for(unsigned int i = 0; i < scheme.size(); i++) {
+            if (find(n.begin(), n.end(), scheme.at(i)) == n.end())
+                n.push_back(scheme.at(i));
+        }
+        Scheme s = Scheme(n);
+        return s;
+    }
+
+};

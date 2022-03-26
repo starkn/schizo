@@ -17,6 +17,8 @@ public:
 
     void addPredicate(Predicate p);
 
+    Predicate getHead();
+    vector<Predicate> getPredicates();
     string toString();
 };
 
@@ -32,6 +34,16 @@ Rule::~Rule()
 void Rule::addPredicate(Predicate p)
 {
     predList.push_back(p);
+}
+
+Predicate Rule::getHead()
+{
+    return head;
+}
+
+vector<Predicate> Rule::getPredicates()
+{
+    return predList;
 }
 
 string Rule::toString()
